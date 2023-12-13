@@ -30,6 +30,8 @@ make build
 ```sh
 # To start
 make start
+
+Then to go http://localhost:5000/monitoring
 ```
 
 ```sh
