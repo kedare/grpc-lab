@@ -1,0 +1,24 @@
+syntax="proto3";
+package proto;
+
+option go_package = "proto/";
+
+message CpuUsageInfoRequest {
+  int32 interval = 1;
+}
+
+message CpuUsageInfoResponse {
+  int32 system_time = 1;
+  int32 user_time = 2;
+  int32 idle_time = 3;
+  int32 iowait_time = 4;
+  int32 irq_time = 5;
+  int32 softirq_time = 6;
+  int32 steal_time = 7;
+  int32 guest_time = 8;
+  int32 guest_nice_time = 9;
+}
+
+service MonitoringService {
+  rpc GetCpuUsageInfo (CpuUsageInfoRequest) returns (CpuUsageInfoResponse) {}
+}
