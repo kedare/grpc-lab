@@ -22,4 +22,5 @@ message CpuUsageInfoResponse {
 
 service MonitoringService {
   rpc GetCpuUsageInfo (CpuUsageInfoRequest) returns (CpuUsageInfoResponse) {}
+  rpc StreamCpuUsageInfo(CpuUsageInfoRequest) returns (stream CpuUsageInfoResponse) {}
 }

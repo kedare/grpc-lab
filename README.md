@@ -17,4 +17,5 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3
 protoc -I pb --go_out gomonitor --go-grpc_out gomonitor proto/MonitoringService.proto
 
 # Generate .NET interface
+# Nothing to do, it's taken care automatically by grpc tool at build time
 ```

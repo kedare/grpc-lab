@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using BlazInfra.Data;
+using BlazInfra.Protobuf;
+using Grpc.Net.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddGrpc();
+
+builder.Services.AddSingleton<MonitoringService.MonitoringServiceClient>(services =>
+{
+    var channel = GrpcChannel.ForAddress("http://localhost:50051");
+    return new MonitoringService.MonitoringServiceClient(channel);
+}
+);
 
 var app = builder.Build();
 

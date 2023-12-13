@@ -5,7 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
+	"time"
 
 	"github.com/kedare/gomonitor/pb"
 	"google.golang.org/grpc"
@@ -21,8 +23,34 @@ type GrpcServer struct {
 
 func (s *GrpcServer) GetCpuUsageInfo(ctx context.Context, in *pb.CpuUsageInfoRequest) (*pb.CpuUsageInfoResponse, error) {
 	log.Println("GetCpuUsageInfo")
+	return GetCpuUsageInfo(in.Interval)
+}
+
+func (s *GrpcServer) StreamCpuUsageInfo(in *pb.CpuUsageInfoRequest, srv pb.MonitoringService_StreamCpuUsageInfoServer) error {
+	log.Println("StreamCpuUsageInfo")
+	for {
+		cpuUsageInfo, err := GetCpuUsageInfo(in.Interval)
+		if err != nil {
+			return err
+		}
+		if err := srv.Send(cpuUsageInfo); err != nil {
+			return err
+		}
+		log.Println("Sent cpu usage info in stream")
+	}
+	log.Println("End of streaming")
+	return nil
+}
+
+func GetCpuUsageInfo(interval int32) (*pb.CpuUsageInfoResponse, error) {
+
+	// Generate a random number between 0 and 100, until we have a real implementation
+	cpuUsage := rand.Intn(100)
+
+	time.Sleep(time.Duration(interval) * time.Second)
+
 	return &pb.CpuUsageInfoResponse{
-		SystemTime: 1,
+		SystemTime: int32(cpuUsage),
 	}, nil
 }
 

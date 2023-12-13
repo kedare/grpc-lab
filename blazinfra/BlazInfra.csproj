@@ -10,4 +10,8 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.59.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Protobuf Include="../proto/MonitoringService.proto" GrpcServices="Client" />
+  </ItemGroup>
+
 </Project>

@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MonitoringService_GetCpuUsageInfo_FullMethodName = "/proto.MonitoringService/GetCpuUsageInfo"
+	MonitoringService_GetCpuUsageInfo_FullMethodName    = "/proto.MonitoringService/GetCpuUsageInfo"
+	MonitoringService_StreamCpuUsageInfo_FullMethodName = "/proto.MonitoringService/StreamCpuUsageInfo"
 )
 
 // MonitoringServiceClient is the client API for MonitoringService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MonitoringServiceClient interface {
 	GetCpuUsageInfo(ctx context.Context, in *CpuUsageInfoRequest, opts ...grpc.CallOption) (*CpuUsageInfoResponse, error)
+	StreamCpuUsageInfo(ctx context.Context, in *CpuUsageInfoRequest, opts ...grpc.CallOption) (MonitoringService_StreamCpuUsageInfoClient, error)
 }
 
 type monitoringServiceClient struct {
@@ -46,11 +48,44 @@ func (c *monitoringServiceClient) GetCpuUsageInfo(ctx context.Context, in *CpuUs
 	return out, nil
 }
 
+func (c *monitoringServiceClient) StreamCpuUsageInfo(ctx context.Context, in *CpuUsageInfoRequest, opts ...grpc.CallOption) (MonitoringService_StreamCpuUsageInfoClient, error) {
+	stream, err := c.cc.NewStream(ctx, &MonitoringService_ServiceDesc.Streams[0], MonitoringService_StreamCpuUsageInfo_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &monitoringServiceStreamCpuUsageInfoClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type MonitoringService_StreamCpuUsageInfoClient interface {
+	Recv() (*CpuUsageInfoResponse, error)
+	grpc.ClientStream
+}
+
+type monitoringServiceStreamCpuUsageInfoClient struct {
+	grpc.ClientStream
+}
+
+func (x *monitoringServiceStreamCpuUsageInfoClient) Recv() (*CpuUsageInfoResponse, error) {
+	m := new(CpuUsageInfoResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // MonitoringServiceServer is the server API for MonitoringService service.
 // All implementations must embed UnimplementedMonitoringServiceServer
 // for forward compatibility
 type MonitoringServiceServer interface {
 	GetCpuUsageInfo(context.Context, *CpuUsageInfoRequest) (*CpuUsageInfoResponse, error)
+	StreamCpuUsageInfo(*CpuUsageInfoRequest, MonitoringService_StreamCpuUsageInfoServer) error
 	mustEmbedUnimplementedMonitoringServiceServer()
 }
 
@@ -60,6 +95,9 @@ type UnimplementedMonitoringServiceServer struct {
 
 func (UnimplementedMonitoringServiceServer) GetCpuUsageInfo(context.Context, *CpuUsageInfoRequest) (*CpuUsageInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCpuUsageInfo not implemented")
+}
+func (UnimplementedMonitoringServiceServer) StreamCpuUsageInfo(*CpuUsageInfoRequest, MonitoringService_StreamCpuUsageInfoServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamCpuUsageInfo not implemented")
 }
 func (UnimplementedMonitoringServiceServer) mustEmbedUnimplementedMonitoringServiceServer() {}
 
@@ -92,6 +130,27 @@ func _MonitoringService_GetCpuUsageInfo_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MonitoringService_StreamCpuUsageInfo_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(CpuUsageInfoRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(MonitoringServiceServer).StreamCpuUsageInfo(m, &monitoringServiceStreamCpuUsageInfoServer{stream})
+}
+
+type MonitoringService_StreamCpuUsageInfoServer interface {
+	Send(*CpuUsageInfoResponse) error
+	grpc.ServerStream
+}
+
+type monitoringServiceStreamCpuUsageInfoServer struct {
+	grpc.ServerStream
+}
+
+func (x *monitoringServiceStreamCpuUsageInfoServer) Send(m *CpuUsageInfoResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // MonitoringService_ServiceDesc is the grpc.ServiceDesc for MonitoringService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +163,12 @@ var MonitoringService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MonitoringService_GetCpuUsageInfo_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamCpuUsageInfo",
+			Handler:       _MonitoringService_StreamCpuUsageInfo_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "MonitoringService.proto",
 }
