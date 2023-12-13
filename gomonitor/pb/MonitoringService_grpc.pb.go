@@ -4,7 +4,7 @@
 // - protoc             v4.25.1
 // source: MonitoringService.proto
 
-package proto
+package pb
 
 import (
 	context "context"

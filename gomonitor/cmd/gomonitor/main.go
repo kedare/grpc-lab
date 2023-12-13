@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/kedare/gomonitor/proto"
+	"github.com/kedare/gomonitor/pb"
 	"google.golang.org/grpc"
 )
 
@@ -16,12 +16,12 @@ var (
 )
 
 type GrpcServer struct {
-	proto.UnimplementedMonitoringServiceServer
+	pb.UnimplementedMonitoringServiceServer
 }
 
-func (s *GrpcServer) GetCpuUsageInfo(ctx context.Context, in *proto.CpuUsageInfoRequest) (*proto.CpuUsageInfoResponse, error) {
+func (s *GrpcServer) GetCpuUsageInfo(ctx context.Context, in *pb.CpuUsageInfoRequest) (*pb.CpuUsageInfoResponse, error) {
 	log.Println("GetCpuUsageInfo")
-	return &proto.CpuUsageInfoResponse{
+	return &pb.CpuUsageInfoResponse{
 		SystemTime: 1,
 	}, nil
 }
@@ -33,7 +33,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	proto.RegisterMonitoringServiceServer(s, &GrpcServer{})
+	pb.RegisterMonitoringServiceServer(s, &GrpcServer{})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
