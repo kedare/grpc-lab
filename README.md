@@ -1,6 +1,14 @@
 # gRPC presentation
 
-# Setup
+## Components
+
+# Gomonitor
+
+Small gRPC server made in go that will expose CPU usage metrics of its host machine (either one shot or streamed)
+
+# Blazinfra
+
+Blazor SSR app that will connect to the gRPC server and display the CPU usage metrics to the client browsers
 
 ## Install Go protobuf and grpc toolchain
 
