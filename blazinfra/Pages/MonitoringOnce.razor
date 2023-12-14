@@ -1,0 +1,51 @@
+﻿@page "/monitoring/once"
+@using BlazInfra.Protobuf
+@using Grpc.Core
+@inject MonitoringService.MonitoringServiceClient MonitoringService
+@inject ILogger<MonitoringOnce> Logger
+
+<PageTitle>Monitoring Service</PageTitle>
+
+<h1>Monitoring Service (Once)</h1>
+
+<p>Monitoring Service getting data from the gomonitor service via gRPC</p>
+
+@if (_isLoading || _cpuUsage == null)
+{
+    <div class="spinner-border" role="status"></div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>System</th>
+                <th>User</th>
+                <th>IOWait</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@_cpuUsage.SystemTime</td>
+                <td>@_cpuUsage.UserTime</td>
+                <td>@_cpuUsage.IowaitTime</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    private CpuUsageInfoResponse? _cpuUsage;
+    private bool _isLoading = true;
+    private AsyncServerStreamingCall<CpuUsageInfoResponse>? _stream;
+
+    // Oneshot mode
+    protected override async Task OnInitializedAsync()
+    {
+        _cpuUsage = await MonitoringService.GetCpuUsageInfoAsync(new CpuUsageInfoRequest()
+        {
+            Interval = 1,
+        });
+        _isLoading = false;
+    }
+}

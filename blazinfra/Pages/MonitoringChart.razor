@@ -1,0 +1,162 @@
+﻿@page "/monitoring/chart"
+@using BlazInfra.Protobuf
+@using BlazorBootstrap
+@using Grpc.Core
+@inject MonitoringService.MonitoringServiceClient MonitoringService
+@inject ILogger<MonitoringChart> Logger
+@implements IDisposable
+
+<PageTitle>Monitoring Service</PageTitle>
+
+<h1>Monitoring Service (Stream)</h1>
+
+<p>Monitoring Service getting data from the gomonitor service via gRPC</p>
+
+@if (_isLoading)
+{
+    <div class="spinner-border" role="status"></div>
+}
+
+<LineChart @ref="_lineChart" Width="800" Class="mb-4" />
+
+@code {
+    private bool _isLoading = true;
+    private bool _isCancelled = false;
+    private AsyncServerStreamingCall<CpuUsageInfoResponse>? _stream;
+
+    private LineChart _lineChart = default!;
+    private LineChartOptions _lineChartOptions = default!;
+    private ChartData? _chartData = default!;
+
+    private int _datasetsCount;
+
+    #region Chart management
+
+    private List<IChartDataset> GetChartDatasets()
+    {
+
+        var datasets = new List<IChartDataset>();
+
+        foreach (var label in GetDefaultDataLabels())
+        {
+            var c = ColorBuilder.CategoricalTwelveColors[_datasetsCount].ToColor();
+            datasets.Add(new LineChartDataset
+            {
+                Label = label,
+                Data = null,
+                BackgroundColor = new List<string> { c.ToRgbString() },
+                BorderColor = new List<string> { c.ToRgbString() },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { c.ToRgbString() },
+                PointRadius = new List<int> { 0 }, // hide points
+                PointHoverRadius = new List<int> { 4 }
+            });
+            _datasetsCount += 1;
+        }
+
+        return datasets;
+    }
+
+    private async Task ShowHorizontalLineChartAsync()
+    {
+        _lineChartOptions.IndexAxis = "y";
+        await _lineChart.UpdateAsync(_chartData, _lineChartOptions);
+    }
+
+    private async Task ShowVerticalLineChartAsync()
+    {
+        _lineChartOptions.IndexAxis = "x";
+        await _lineChart.UpdateAsync(_chartData, _lineChartOptions);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _chartData = new ChartData { Labels = new List<string>(), Datasets = GetChartDatasets()};
+        _lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        if (firstRender)
+        {
+            await _lineChart.InitializeAsync(_chartData, _lineChartOptions);
+        }
+
+        await InvokeAsync(async () => await StreamCpuUsageInfo());
+        await base.OnAfterRenderAsync(firstRender);
+        _isLoading = false;
+    }
+
+    private List<string> GetDefaultDataLabels()
+    {
+        return new List<string>
+        {
+            "System",
+            "User",
+        };
+    }
+
+    #endregion
+
+    #region Data processing
+
+    private async Task StreamCpuUsageInfo()
+    {
+        _stream = MonitoringService.StreamCpuUsageInfo(new CpuUsageInfoRequest()
+        {
+            Interval = 1,
+        });
+
+        Logger.LogInformation("Starting to stream cpu usage");
+
+        var i = 0;
+        await foreach (var cpuUsage in _stream.ResponseStream.ReadAllAsync())
+        {
+            Logger.LogInformation("Getting gpu usage from stream");
+            if (_isCancelled)
+            {
+                Logger.LogInformation("Cancelled Monitoring component");
+                break;
+            }
+
+            if (_chartData is null || _chartData.Datasets is null)
+                continue;
+
+            var data = new List<IChartDatasetData>();
+            foreach (var dataset in _chartData.Datasets)
+            {
+                if (dataset is LineChartDataset lineChartDataset)
+                {
+                Logger.LogInformation($"Iterating datasets: {lineChartDataset.Label}");
+                    switch (lineChartDataset.Label)
+                    {
+                        case "System":
+                            data.Add(new LineChartDatasetData(lineChartDataset.Label, cpuUsage.SystemTime));
+                            break;
+                        case "User":
+                            data.Add(new LineChartDatasetData(lineChartDataset.Label, cpuUsage.UserTime));
+                            break;
+                    }
+
+                    Logger.LogInformation("Adding data to chart");
+                    Logger.LogInformation("Added");
+                }
+            } 
+            _chartData = await _lineChart.AddDataAsync(_chartData,i.ToString(), data);
+            i++;
+        }
+
+        _isLoading = false;
+        StateHasChanged();
+        Logger.LogInformation("Stopped streaming cpu usage");
+    }
+
+    // Set the _isCancelled flag to true when the component is disposed
+    public void Dispose()
+    {
+        Logger.LogInformation("Dispose Monitoring component");
+        if (_stream != null)
+            _stream.Dispose();
+        _isCancelled = true;
+    }
+
+    #endregion
+
+}

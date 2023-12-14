@@ -1,20 +1,19 @@
-﻿@page "/monitoring"
-@using BlazInfra.Data
+﻿@page "/monitoring/stream"
 @using BlazInfra.Protobuf
 @using Grpc.Core
 @inject MonitoringService.MonitoringServiceClient MonitoringService
-@inject ILogger<Monitoring> Logger
+@inject ILogger<MonitoringStream> Logger
 @implements IDisposable
 
 <PageTitle>Monitoring Service</PageTitle>
 
-<h1>Monitoring Service</h1>
+<h1>Monitoring Service (Stream)</h1>
 
 <p>Monitoring Service getting data from the gomonitor service via gRPC</p>
 
 @if (_isLoading || _cpuUsage == null)
 {
-    <p><em>Loading...</em></p>
+    <div class="spinner-border" role="status"></div>
 }
 else
 {
@@ -42,16 +41,6 @@ else
     private bool _isCancelled = false;
     private AsyncServerStreamingCall<CpuUsageInfoResponse>? _stream;
 
-    // // Oneshot mode
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     _cpuUsage = await MonitoringService.GetCpuUsageInfoAsync(new CpuUsageInfoRequest()
-    //     {
-    //         Interval = 1,
-    //     });
-    //     _isLoading = false;
-    // }
-    
     // Streaming mode
     protected override async Task OnInitializedAsync()
     {
@@ -69,6 +58,7 @@ else
         
         await foreach (var cpuUsage in _stream.ResponseStream.ReadAllAsync())
         {
+            Logger.LogInformation("Getting gpu usage from stream");
             if (_isCancelled)
             {
                 Logger.LogInformation("Cancelled Monitoring component");
@@ -79,6 +69,7 @@ else
             _isLoading = false;
             StateHasChanged();
         }
+        Logger.LogInformation("Stopped streaming cpu usage");
     }
     
     // Set the _isCancelled flag to true when the component is disposed

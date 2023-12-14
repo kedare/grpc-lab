@@ -11,6 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddGrpc();
+builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddSingleton<MonitoringService.MonitoringServiceClient>(services =>
 {
