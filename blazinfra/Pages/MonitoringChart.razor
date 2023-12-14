@@ -107,9 +107,20 @@
         Logger.LogInformation("Starting to stream cpu usage");
 
         var i = 0;
-        await foreach (var cpuUsage in _stream.ResponseStream.ReadAllAsync())
+        while(true)
         {
             Logger.LogInformation("Getting gpu usage from stream");
+            CpuUsageInfoResponse cpuUsage;
+            try
+            {
+                await _stream.ResponseStream.MoveNext();
+                cpuUsage = _stream.ResponseStream.Current;
+            }
+            catch (Grpc.Core.RpcException e)
+            {
+                Logger.LogWarning(e.ToString());
+                break;
+            }
             if (_isCancelled)
             {
                 Logger.LogInformation("Cancelled Monitoring component");
@@ -141,6 +152,11 @@
             } 
             _chartData = await _lineChart.AddDataAsync(_chartData,i.ToString(), data);
             i++;
+            if (_isCancelled)
+            {
+                Logger.LogInformation("Cancelled Monitoring component");
+                break;
+            }
         }
 
         _isLoading = false;
