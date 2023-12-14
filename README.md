@@ -2,22 +2,24 @@
 
 ## Components
 
-# Gomonitor
+### Gomonitor
 
 Small gRPC server made in go that will expose CPU usage metrics of its host machine (either one shot or streamed)
 
-# Blazinfra
+### Blazinfra
 
 Blazor SSR app that will connect to the gRPC server and display the CPU usage metrics to the client browsers
 
-## Install Go protobuf and grpc toolchain
+## Usage
+
+### Install Go protobuf and grpc toolchain
 
 ```shell
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.31
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3
 ```
 
-# To generate the protobuf interfaces
+### To generate the protobuf interfaces
 
 ```shell
 
@@ -28,7 +30,7 @@ protoc -I pb --go_out gomonitor --go-grpc_out gomonitor proto/MonitoringService.
 # Nothing to do, it's taken care automatically by grpc tool at build time
 ```
 
-# How to use ?
+### How to use ?
 
 ```sh
 # to build
