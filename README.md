@@ -1,5 +1,7 @@
 # gRPC presentation
 
+![image](protobuf.png)
+
 ## Components
 
 ### Gomonitor
