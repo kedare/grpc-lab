@@ -12,15 +12,9 @@
 
 <p>Monitoring Service streaming data to Blazor Chart from the gomonitor service via gRPC</p>
 
-@if (_isLoading)
-{
-    <div class="spinner-border" role="status"></div>
-}
-
-<LineChart @ref="_lineChart" Width="800" Class="mb-4" />
+<LineChart @ref="_lineChart" Width="800" Class="mb-4"/>
 
 @code {
-    private bool _isLoading = true;
     private bool _isCancelled = false;
     private AsyncServerStreamingCall<CpuUsageInfoResponse>? _stream;
 
@@ -34,7 +28,6 @@
 
     private List<IChartDataset> GetChartDatasets()
     {
-
         var datasets = new List<IChartDataset>();
 
         foreach (var label in GetDefaultDataLabels())
@@ -72,8 +65,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _chartData = new ChartData { Labels = new List<string>(), Datasets = GetChartDatasets()};
-        _lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        _chartData = new ChartData { Labels = new List<string>(), Datasets = GetChartDatasets() };
+        _lineChartOptions = new LineChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
         if (firstRender)
         {
             await _lineChart.InitializeAsync(_chartData, _lineChartOptions);
@@ -81,7 +74,6 @@
 
         await InvokeAsync(async () => await StreamCpuUsageInfo());
         await base.OnAfterRenderAsync(firstRender);
-        _isLoading = false;
     }
 
     private List<string> GetDefaultDataLabels()
@@ -89,7 +81,7 @@
         return new List<string>
         {
             "System",
-            "User",
+            "User"
         };
     }
 
@@ -101,13 +93,13 @@
     {
         _stream = MonitoringService.StreamCpuUsageInfo(new CpuUsageInfoRequest()
         {
-            Interval = 1,
+            Interval = 1
         });
 
         Logger.LogInformation("Starting to stream cpu usage");
 
         var i = 0;
-        while(true)
+        while (true)
         {
             Logger.LogInformation("Getting gpu usage from stream");
             CpuUsageInfoResponse cpuUsage;
@@ -116,11 +108,12 @@
                 await _stream.ResponseStream.MoveNext();
                 cpuUsage = _stream.ResponseStream.Current;
             }
-            catch (Grpc.Core.RpcException e)
+            catch (RpcException e)
             {
                 Logger.LogWarning(e.ToString());
                 break;
             }
+
             if (_isCancelled)
             {
                 Logger.LogInformation("Cancelled Monitoring component");
@@ -135,7 +128,7 @@
             {
                 if (dataset is LineChartDataset lineChartDataset)
                 {
-                Logger.LogInformation($"Iterating datasets: {lineChartDataset.Label}");
+                    Logger.LogInformation($"Iterating datasets: {lineChartDataset.Label}");
                     switch (lineChartDataset.Label)
                     {
                         case "System":
@@ -149,8 +142,9 @@
                     Logger.LogInformation("Adding data to chart");
                     Logger.LogInformation("Added");
                 }
-            } 
-            _chartData = await _lineChart.AddDataAsync(_chartData,i.ToString(), data);
+            }
+
+            _chartData = await _lineChart.AddDataAsync(_chartData, i.ToString(), data);
             i++;
             if (_isCancelled)
             {
@@ -159,7 +153,6 @@
             }
         }
 
-        _isLoading = false;
         StateHasChanged();
         Logger.LogInformation("Stopped streaming cpu usage");
     }

@@ -19,18 +19,18 @@ else
 {
     <table class="table">
         <thead>
-            <tr>
-                <th>System</th>
-                <th>User</th>
-                <th>IOWait</th>
-            </tr>
+        <tr>
+            <th>System</th>
+            <th>User</th>
+            <th>IOWait</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>@_cpuUsage.SystemTime</td>
-                <td>@_cpuUsage.UserTime</td>
-                <td>@_cpuUsage.IowaitTime</td>
-            </tr>
+        <tr>
+            <td>@_cpuUsage.SystemTime</td>
+            <td>@_cpuUsage.UserTime</td>
+            <td>@_cpuUsage.IowaitTime</td>
+        </tr>
         </tbody>
     </table>
 }
@@ -46,16 +46,16 @@ else
     {
         InvokeAsync(async () => await StreamCpuUsageInfo());
     }
-    
+
     private async Task StreamCpuUsageInfo()
     {
         _stream = MonitoringService.StreamCpuUsageInfo(new CpuUsageInfoRequest()
         {
-            Interval = 1,
+            Interval = 1
         });
-        
+
         Logger.LogInformation("Starting to stream cpu usage");
-        
+
         await foreach (var cpuUsage in _stream.ResponseStream.ReadAllAsync())
         {
             Logger.LogInformation("Getting gpu usage from stream");
@@ -64,14 +64,15 @@ else
                 Logger.LogInformation("Cancelled Monitoring component");
                 break;
             }
-            
+
             _cpuUsage = cpuUsage;
             _isLoading = false;
             StateHasChanged();
         }
+
         Logger.LogInformation("Stopped streaming cpu usage");
     }
-    
+
     // Set the _isCancelled flag to true when the component is disposed
     public void Dispose()
     {
@@ -79,5 +80,5 @@ else
         _stream.Dispose();
         _isCancelled = true;
     }
-    
+
 }

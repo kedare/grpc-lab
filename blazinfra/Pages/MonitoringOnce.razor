@@ -18,18 +18,18 @@ else
 {
     <table class="table">
         <thead>
-            <tr>
-                <th>System</th>
-                <th>User</th>
-                <th>IOWait</th>
-            </tr>
+        <tr>
+            <th>System</th>
+            <th>User</th>
+            <th>IOWait</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>@_cpuUsage.SystemTime</td>
-                <td>@_cpuUsage.UserTime</td>
-                <td>@_cpuUsage.IowaitTime</td>
-            </tr>
+        <tr>
+            <td>@_cpuUsage.SystemTime</td>
+            <td>@_cpuUsage.UserTime</td>
+            <td>@_cpuUsage.IowaitTime</td>
+        </tr>
         </tbody>
     </table>
 }
@@ -44,8 +44,9 @@ else
     {
         _cpuUsage = await MonitoringService.GetCpuUsageInfoAsync(new CpuUsageInfoRequest()
         {
-            Interval = 1,
+            Interval = 1
         });
         _isLoading = false;
     }
+
 }
