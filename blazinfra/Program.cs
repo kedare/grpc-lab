@@ -17,7 +17,6 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(builder => builder
         .AddGrpcClientInstrumentation()
         .AddHttpClientInstrumentation()
-        .AddConsoleExporter()
         .AddOtlpExporter());
 
 builder.Services.AddSingleton<MonitoringService.MonitoringServiceClient>(services =>
