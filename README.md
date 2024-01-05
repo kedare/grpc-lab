@@ -65,3 +65,7 @@ make clean
 ### Improvements
 
 - Go: Implement proper flow control and context management for the streaming to properly terminate the connections (instead of leaving gorouting forever)
+
+## gRPC API gateway
+
+See https://apisix.apache.org/blog/2021/12/30/apisix-proxy-grpc-service/

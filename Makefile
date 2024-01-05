@@ -11,7 +11,7 @@ clean:
 
 start:
 	OTEL_SERVICE_NAME=gomonitor ./bin/gomonitor &
-	(cd ./bin;OTEL_SERVICE_NAME=blazinfra ./BlazInfra &)
+	(cd ./bin; OTEL_SERVICE_NAME=blazinfra ./BlazInfra &)
 
 stop:
 	killall gomonitor
