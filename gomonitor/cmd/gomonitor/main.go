@@ -30,20 +30,23 @@ func (s *GrpcServer) GetCpuUsageInfo(ctx context.Context, in *pb.CpuUsageInfoReq
 // StreamCpuUsageInfo streams cpu usage info via grPC
 func (s *GrpcServer) StreamCpuUsageInfo(in *pb.CpuUsageInfoRequest, srv pb.MonitoringService_StreamCpuUsageInfoServer) error {
 	log.Println("StreamCpuUsageInfo")
+	ctx := srv.Context()
 	for {
-		err := srv.Context().Err()
-		if err != nil {
-			log.Println("End of streaming, reason: ", err.Error())
-			return err
-		}
 		cpuUsageInfo, err := GetCpuUsageInfo(in.Interval)
 		if err != nil {
 			return err
 		}
-		if err := srv.Send(cpuUsageInfo); err != nil {
-			return err
+		select {
+		case <-ctx.Done():
+			log.Println("End of streaming, reason: ", ctx.Err().Error())
+			return ctx.Err()
+
+		default:
+			if err := srv.Send(cpuUsageInfo); err != nil {
+				return err
+			}
+			log.Println("Sent cpu usage info in stream")
 		}
-		log.Println("Sent cpu usage info in stream")
 	}
 }
 
