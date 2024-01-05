@@ -19,11 +19,12 @@ builder.Services.AddOpenTelemetry()
         .AddHttpClientInstrumentation()
         .AddConsoleExporter()
         .AddOtlpExporter());
+
 builder.Services.AddSingleton<MonitoringService.MonitoringServiceClient>(services =>
-{
-    var channel = GrpcChannel.ForAddress("http://localhost:50051");
-    return new MonitoringService.MonitoringServiceClient(channel);
-}
+    {
+        var channel = GrpcChannel.ForAddress("http://localhost:50051");
+        return new MonitoringService.MonitoringServiceClient(channel);
+    }
 );
 
 var app = builder.Build();
