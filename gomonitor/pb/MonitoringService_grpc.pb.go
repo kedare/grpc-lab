@@ -27,7 +27,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MonitoringServiceClient interface {
+	// Get the CPU usage information
 	GetCpuUsageInfo(ctx context.Context, in *CpuUsageInfoRequest, opts ...grpc.CallOption) (*CpuUsageInfoResponse, error)
+	// Stream the CPU usage information
 	StreamCpuUsageInfo(ctx context.Context, in *CpuUsageInfoRequest, opts ...grpc.CallOption) (MonitoringService_StreamCpuUsageInfoClient, error)
 }
 
@@ -84,7 +86,9 @@ func (x *monitoringServiceStreamCpuUsageInfoClient) Recv() (*CpuUsageInfoRespons
 // All implementations must embed UnimplementedMonitoringServiceServer
 // for forward compatibility
 type MonitoringServiceServer interface {
+	// Get the CPU usage information
 	GetCpuUsageInfo(context.Context, *CpuUsageInfoRequest) (*CpuUsageInfoResponse, error)
+	// Stream the CPU usage information
 	StreamCpuUsageInfo(*CpuUsageInfoRequest, MonitoringService_StreamCpuUsageInfoServer) error
 	mustEmbedUnimplementedMonitoringServiceServer()
 }

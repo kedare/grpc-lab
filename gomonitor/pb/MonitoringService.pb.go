@@ -20,11 +20,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// The CPU usage information request
 type CpuUsageInfoRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The interval in seconds between each CPU usage information update
+	// The average during this time interval will be returned
 	Interval int32 `protobuf:"varint,1,opt,name=interval,proto3" json:"interval,omitempty"`
 }
 
@@ -67,19 +70,29 @@ func (x *CpuUsageInfoRequest) GetInterval() int32 {
 	return 0
 }
 
+// The CPU usage information response
 type CpuUsageInfoResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	SystemTime    int32 `protobuf:"varint,1,opt,name=system_time,json=systemTime,proto3" json:"system_time,omitempty"`
-	UserTime      int32 `protobuf:"varint,2,opt,name=user_time,json=userTime,proto3" json:"user_time,omitempty"`
-	IdleTime      int32 `protobuf:"varint,3,opt,name=idle_time,json=idleTime,proto3" json:"idle_time,omitempty"`
-	IowaitTime    int32 `protobuf:"varint,4,opt,name=iowait_time,json=iowaitTime,proto3" json:"iowait_time,omitempty"`
-	IrqTime       int32 `protobuf:"varint,5,opt,name=irq_time,json=irqTime,proto3" json:"irq_time,omitempty"`
-	SoftirqTime   int32 `protobuf:"varint,6,opt,name=softirq_time,json=softirqTime,proto3" json:"softirq_time,omitempty"`
-	StealTime     int32 `protobuf:"varint,7,opt,name=steal_time,json=stealTime,proto3" json:"steal_time,omitempty"`
-	GuestTime     int32 `protobuf:"varint,8,opt,name=guest_time,json=guestTime,proto3" json:"guest_time,omitempty"`
+	// The CPU system time (used by kernel)
+	SystemTime int32 `protobuf:"varint,1,opt,name=system_time,json=systemTime,proto3" json:"system_time,omitempty"`
+	// The CPU user time (used by user processes)
+	UserTime int32 `protobuf:"varint,2,opt,name=user_time,json=userTime,proto3" json:"user_time,omitempty"`
+	// The CPU idle time (not used)
+	IdleTime int32 `protobuf:"varint,3,opt,name=idle_time,json=idleTime,proto3" json:"idle_time,omitempty"`
+	// The CPU I/O wait time (waiting for I/O operations to complete)
+	IowaitTime int32 `protobuf:"varint,4,opt,name=iowait_time,json=iowaitTime,proto3" json:"iowait_time,omitempty"`
+	// The CPU IRQ time (servicing interrupts)
+	IrqTime int32 `protobuf:"varint,5,opt,name=irq_time,json=irqTime,proto3" json:"irq_time,omitempty"`
+	// The CPU soft IRQ time (servicing soft interrupts)
+	SoftirqTime int32 `protobuf:"varint,6,opt,name=softirq_time,json=softirqTime,proto3" json:"softirq_time,omitempty"`
+	// The CPU steal time (time spent in other operating systems when running in a virtualized environment)
+	StealTime int32 `protobuf:"varint,7,opt,name=steal_time,json=stealTime,proto3" json:"steal_time,omitempty"`
+	// The CPU guest time (time spent running a virtual CPU for guest operating systems under the control of the Linux kernel)
+	GuestTime int32 `protobuf:"varint,8,opt,name=guest_time,json=guestTime,proto3" json:"guest_time,omitempty"`
+	// The CPU guest nice time (time spent running a niced guest (virtual CPU for guest operating systems under the control of the Linux kernel))
 	GuestNiceTime int32 `protobuf:"varint,9,opt,name=guest_nice_time,json=guestNiceTime,proto3" json:"guest_nice_time,omitempty"`
 }
 

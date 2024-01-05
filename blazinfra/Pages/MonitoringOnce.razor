@@ -32,6 +32,8 @@ else
         </tr>
         </tbody>
     </table>
+    <hr />
+    <button class="btn btn-primary" @onclick="Refresh">Refresh</button>
 }
 
 @code {
@@ -42,6 +44,13 @@ else
     // Oneshot mode
     protected override async Task OnInitializedAsync()
     {
+        await Refresh();
+    }
+
+    // Refresh the data
+    private async Task Refresh()
+    {
+        _isLoading = true;
         _cpuUsage = await MonitoringService.GetCpuUsageInfoAsync(new CpuUsageInfoRequest()
         {
             Interval = 1

@@ -4,23 +4,55 @@ package proto;
 option go_package = "pb/";
 option csharp_namespace = "BlazInfra.Protobuf";
 
+//
+// The CPU usage information request
 message CpuUsageInfoRequest {
+
+  // The interval in seconds between each CPU usage information update
+  // The average during this time interval will be returned
   int32 interval = 1;
 }
 
+//
+// The CPU usage information response
 message CpuUsageInfoResponse {
+
+  // The CPU system time (used by kernel)
   int32 system_time = 1;
+
+  // The CPU user time (used by user processes)
   int32 user_time = 2;
+
+  // The CPU idle time (not used)
   int32 idle_time = 3;
+
+  // The CPU I/O wait time (waiting for I/O operations to complete)
   int32 iowait_time = 4;
+
+  // The CPU IRQ time (servicing interrupts)
   int32 irq_time = 5;
+
+  // The CPU soft IRQ time (servicing soft interrupts)
   int32 softirq_time = 6;
+
+  // The CPU steal time (time spent in other operating systems when running in a virtualized environment)
   int32 steal_time = 7;
+
+  // The CPU guest time (time spent running a virtual CPU for guest operating systems under the control of the Linux kernel)
   int32 guest_time = 8;
+
+  // The CPU guest nice time (time spent running a niced guest (virtual CPU for guest operating systems under the control of the Linux kernel))
   int32 guest_nice_time = 9;
 }
 
+//
+// The monitoring service
+// This service provides CPU usage information
 service MonitoringService {
+
+  // Get the CPU usage information
   rpc GetCpuUsageInfo (CpuUsageInfoRequest) returns (CpuUsageInfoResponse) {}
+
+  // Stream the CPU usage information
   rpc StreamCpuUsageInfo(CpuUsageInfoRequest) returns (stream CpuUsageInfoResponse) {}
 }

@@ -1,3 +1,9 @@
+---
+runme:
+  id: 01HKCFQB6A8M685V3XX2Y0JQP9
+  version: v2.0
+---
+
 # gRPC presentation
 
 ![image](protobuf.png)
@@ -16,17 +22,17 @@ Blazor SSR app that will connect to the gRPC server and display the CPU usage me
 
 ### Install Go protobuf and grpc toolchain
 
-```shell
+```shell {"id":"01HKCFQB6A8M685V3XWPYMS8X1"}
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.31
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3
 ```
 
 ### To generate the protobuf interfaces
 
-```shell
+```shell {"id":"01HKCFQB6A8M685V3XWRYBNPTP"}
 
 # Generate Go interface
-protoc -I pb --go_out gomonitor --go-grpc_out gomonitor proto/MonitoringService.proto
+protoc -I proto/ --go_out gomonitor --go-grpc_out gomonitor proto/MonitoringService.proto
 
 # Generate .NET interface
 # Nothing to do, it's taken care automatically by grpc tool at build time
@@ -34,24 +40,24 @@ protoc -I pb --go_out gomonitor --go-grpc_out gomonitor proto/MonitoringService.
 
 ### How to use ?
 
-```sh
+```sh {"id":"01HKCFQB6A8M685V3XWT4NENAZ"}
 # to build
 make build
 ```
 
-```sh
+```sh {"id":"01HKCFQB6A8M685V3XWTWS05YR"}
 # To start
 make start
 
 Then to go http://localhost:5000/
 ```
 
-```sh
+```sh {"id":"01HKCFQB6A8M685V3XWYMG85V3"}
 # To stop
 make stop
 ```
 
-```sh
+```sh {"id":"01HKCFQB6A8M685V3XX2B878GG"}
 # to clean
 make clean
 ```
