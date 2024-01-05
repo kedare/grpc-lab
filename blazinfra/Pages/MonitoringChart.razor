@@ -91,6 +91,7 @@
 
     private async Task StreamCpuUsageInfo()
     {
+        using var activity = Telemetry.AppActivitySource.StartActivity();
         _stream = MonitoringService.StreamCpuUsageInfo(new CpuUsageInfoRequest()
         {
             Interval = 1
@@ -160,6 +161,7 @@
     // Set the _isCancelled flag to true when the component is disposed
     public void Dispose()
     {
+        using var activity = Telemetry.AppActivitySource.StartActivity();
         Logger.LogInformation("Dispose Monitoring component");
         if (_stream != null)
             _stream.Dispose();

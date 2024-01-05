@@ -137,9 +137,6 @@ func main() {
 	pb.RegisterMonitoringServiceServer(s, &GrpcServer{})
 	log.Printf("server listening at %v", lis.Addr())
 
-	_, span := tracer.Start(ctx, "testing")
-	span.End()
-
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

@@ -10,8 +10,8 @@ clean:
 	mkdir bin
 
 start:
-	./bin/gomonitor &
-	(cd ./bin; ./BlazInfra &)
+	OTEL_SERVICE_NAME=gomonitor ./bin/gomonitor &
+	(cd ./bin;OTEL_SERVICE_NAME=blazinfra ./BlazInfra &)
 
 stop:
 	killall gomonitor

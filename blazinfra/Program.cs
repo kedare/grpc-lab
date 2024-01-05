@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using BlazInfra.Data;
 using BlazInfra.Protobuf;
 using Grpc.Net.Client;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,12 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddGrpc();
 builder.Services.AddBlazorBootstrap();
-
+builder.Services.AddOpenTelemetry()
+    .WithTracing(builder => builder
+        .AddGrpcClientInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddConsoleExporter()
+        .AddOtlpExporter());
 builder.Services.AddSingleton<MonitoringService.MonitoringServiceClient>(services =>
 {
     var channel = GrpcChannel.ForAddress("http://localhost:50051");

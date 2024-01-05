@@ -1,5 +1,6 @@
 ﻿@page "/monitoring/once"
 @using BlazInfra.Protobuf
+@using BlazInfra.Shared
 @using Grpc.Core
 @inject MonitoringService.MonitoringServiceClient MonitoringService
 @inject ILogger<MonitoringOnce> Logger
@@ -50,6 +51,7 @@ else
     // Refresh the data
     private async Task Refresh()
     {
+        using var activity = Telemetry.AppActivitySource.StartActivity();
         _isLoading = true;
         _cpuUsage = await MonitoringService.GetCpuUsageInfoAsync(new CpuUsageInfoRequest()
         {
